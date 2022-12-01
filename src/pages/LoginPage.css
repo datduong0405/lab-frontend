@@ -1,0 +1,11 @@
+.login-contianer {
+  background-color: var(--secondaryColor);
+  height: 100vh;
+}
+.dummy {
+  display: flex;
+  flex-direction: row;
+}
+.dummyRight {
+  padding-left: 60px;
+}

@@ -1,0 +1,38 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.user-name {
+  font-size: 20px;
+  color: white;
+}
+.user-role {
+  color: white;
+}
+
+.main {
+  background-color: var(--colorbackground);
+}
+
+.sidebar {
+  background-color: var(--primaryColor);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 50px;
+}
+
+#button {
+  margin-top: 20px;
+}
