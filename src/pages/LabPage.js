@@ -26,9 +26,15 @@ import {
   Tooltip,
   Toolbar,
   Select,
+  Fab,
 } from "@mui/material";
 
-import { ConstructionOutlined, Delete, Edit } from "@mui/icons-material";
+import {
+  ConstructionOutlined,
+  Delete,
+  Edit,
+  Refresh,
+} from "@mui/icons-material";
 import { UserContext } from "../App";
 import "./DashboardPage.css";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -108,7 +114,6 @@ const DashboardPage = () => {
             <Button
               color="warning"
               variant="contained"
-              disabled={params.row.status === "IN USE"}
               onClick={() => {
                 setEditModel(true);
                 setLabId(params.row.id);
@@ -194,6 +199,14 @@ const DashboardPage = () => {
         >
           Thêm Phòng Thực Hành
         </Button>
+        <Fab
+          color="primary"
+          aria-label="refresh"
+          size="small"
+          onClick={getAllLab}
+        >
+          <Refresh />
+        </Fab>
       </Stack>
       <Box className="content-bottom">
         <Paper
@@ -416,10 +429,7 @@ export const EditLabModel = ({
   const labAdmin = users.filter(
     (user) => user.role.name === "LAB ADMIN" && user.status === "ACTIVE"
   );
-  //   const handleChange = (e) => {
-  //     setValues({ ...values, [e.target.name]: e.target.value });
-  //     console.log(values);
-  //   };
+
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Sửa Thông Tin</DialogTitle>

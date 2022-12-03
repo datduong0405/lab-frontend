@@ -5,3 +5,8 @@ export { default as LabPage } from "./LabPage";
 export { default as EquipmentPage } from "./EquipmentPage";
 export { default as TeacherDashboard } from "./TeacherDashboard";
 export { default as TeacherLab } from "./TeacherLab";
+export { default as LabAdminLayout } from "./LabAdminLayout";
+export { default as LabAdminDashboard } from "./LabAdminDashboard";
+export { default as LabAdminLab } from "./LabAdminLab";
+export { default as LabAdminEquipment } from "./LabAdminEquipment";
+export { default as HistoryPage } from "./HistoryPage";

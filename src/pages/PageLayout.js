@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Stack, Paper } from "@mui/material";
+import { Box, Typography, Button, Stack, Paper, Badge } from "@mui/material";
 import { Link, Outlet } from "react-router-dom";
 
 import { UserContext } from "../App";
@@ -14,6 +14,11 @@ import HistoryIcon from "@mui/icons-material/History";
 import { styled } from "@mui/material/styles";
 import { PieChart } from "react-minimal-pie-chart";
 import axios from "axios";
+import SettingsIcon from "@mui/icons-material/Settings";
+import NightlightIcon from "@mui/icons-material/Nightlight";
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import { NotificationsNone } from "@mui/icons-material";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -138,6 +143,14 @@ const PageLayout = () => {
               }}
             >
               Log Out
+            </Button>
+            <Button color="info">
+              <Badge badgeContent={4} color="error">
+                <NotificationsNone />
+              </Badge>
+            </Button>
+            <Button color="info">
+              <NightlightIcon />
             </Button>
           </Box>
         </Stack>

@@ -1,61 +1,34 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
   Box,
-  Typography,
   Button,
-  Stack,
-  Paper,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Toolbar,
-  NativeSelect,
+  Fab,
   FormControl,
   InputLabel,
+  NativeSelect,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Delete, Edit, SettingsPhoneTwoTone } from "@mui/icons-material";
-import { UserContext } from "../App";
-import "./DashboardPage.css";
-import { reactLocalStorage } from "reactjs-localstorage";
-import HomeIcon from "@mui/icons-material/Home";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
-import DevicesIcon from "@mui/icons-material/Devices";
-import HistoryIcon from "@mui/icons-material/History";
-import { styled } from "@mui/material/styles";
-import { PieChart } from "react-minimal-pie-chart";
+import { Refresh } from "@mui/icons-material";
 import axios from "axios";
-import MaterialReactTable from "material-react-table";
+import "./DashboardPage.css";
 
 const baseUrl = "http://localhost:8080/api/lab/";
 const DashboardPage = () => {
   const [user, setUser] = useState([]);
 
-  const { loged, setLoged } = useContext(UserContext);
-
-  // const storeUser = reactLocalStorage.get("user");
-  // const parseUser = JSON.parse(storeUser);
-
-  const location = useLocation;
-  const [selected, setSelected] = useState(2);
   const [title, setTitle] = useState("Quản Lý Người Dùng");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModel, setEditModel] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
   const [id, setId] = useState();
   const [userEdit, setUserEdit] = useState({});
 
@@ -108,9 +81,6 @@ const DashboardPage = () => {
             <Button
               color="warning"
               variant="contained"
-              disabled={
-                params.row.role && params.row.role.name === "SUPER ADMIN"
-              }
               onClick={() => {
                 setEditModel(true);
                 setId(params.row.id);
@@ -134,39 +104,6 @@ const DashboardPage = () => {
           </Stack>
         );
       },
-    },
-  ];
-
-  const adminNav = [
-    {
-      icon: <HomeIcon />,
-      title: "Tổng Quan",
-      id: 1,
-      path: "/",
-    },
-    {
-      icon: <SupervisedUserCircleIcon />,
-      title: "Người Dùng",
-      id: 2,
-      path: "/user",
-    },
-    {
-      icon: <ElectricBoltIcon />,
-      title: "Phòng Thực Hành",
-      id: 3,
-      path: "/lab",
-    },
-    {
-      icon: <DevicesIcon />,
-      title: "Thiết Bị",
-      id: 4,
-      path: "/equipment",
-    },
-    {
-      icon: <HistoryIcon />,
-      title: "Lịch Sử",
-      id: 5,
-      path: "history",
     },
   ];
 
@@ -198,6 +135,14 @@ const DashboardPage = () => {
         >
           Thêm Người Dùng
         </Button>
+        <Fab
+          color="primary"
+          aria-label="refresh"
+          size="small"
+          onClick={getAllUser}
+        >
+          <Refresh />
+        </Fab>
       </Stack>
       <Box className="content-bottom">
         <Paper

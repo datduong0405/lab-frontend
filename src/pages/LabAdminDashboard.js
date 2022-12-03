@@ -32,7 +32,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const TeacherDashboard = () => {
+const LabAdminDashboard = () => {
   const { loged, authenticate, setLoged } = useContext(UserContext);
 
   const [user, setUser] = useState(JSON.parse(reactLocalStorage.get("user")));
@@ -55,10 +55,8 @@ const TeacherDashboard = () => {
   const [hide, setHide] = useState("hidden");
   const [disable, setDisable] = useState(true);
 
-  console.log(Math.floor(new Date("2012.08.10").getTime() / 1000));
-
   const getAllLab = async () => {
-    axios.get(`${baseUrl}user/laboratory`).then((res) => {
+    axios.get(`${baseUrl}user/laboratory/labadmin/${loged.id}`).then((res) => {
       setLab(res.data);
     });
   };
@@ -360,4 +358,4 @@ const TeacherDashboard = () => {
   );
 };
 
-export default TeacherDashboard;
+export default LabAdminDashboard;

@@ -10,6 +10,10 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import DevicesIcon from "@mui/icons-material/Devices";
 import HistoryIcon from "@mui/icons-material/History";
+import SettingsIcon from "@mui/icons-material/Settings";
+import NightlightIcon from "@mui/icons-material/Nightlight";
+import Badge from "@mui/material/Badge";
+import { NotificationAdd, Notifications } from "@mui/icons-material";
 
 const PageLayout = () => {
   const { loged, setLoged } = useContext(UserContext);
@@ -114,6 +118,14 @@ const PageLayout = () => {
               }}
             >
               Log Out
+            </Button>
+            <Button color="info">
+              <Badge badgeContent={4} color="error">
+                <Notifications />
+              </Badge>
+            </Button>
+            <Button color="info">
+              <NightlightIcon />
             </Button>
           </Box>
         </Stack>

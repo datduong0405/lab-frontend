@@ -10,6 +10,10 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NativeSelect from "@mui/material/NativeSelect";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import {
   Box,
   Typography,
@@ -26,9 +30,15 @@ import {
   Tooltip,
   Toolbar,
   Select,
+  Fab,
 } from "@mui/material";
 
-import { ConstructionOutlined, Delete, Edit } from "@mui/icons-material";
+import {
+  ConstructionOutlined,
+  Delete,
+  Edit,
+  Refresh,
+} from "@mui/icons-material";
 import { UserContext } from "../App";
 import "./DashboardPage.css";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -56,7 +66,11 @@ const DashboardPage = () => {
   const [labEdit, setLabEdit] = useState({});
   const [user, setUser] = useState([]);
   const [adminId, setAdminId] = useState();
-  const [usingLab, setUsingLab] = useState();
+  const [usingLab, setUsingLab] = useState([]);
+  const [userId, setUserId] = useState(
+    JSON.parse(reactLocalStorage.get("user")).id
+  );
+
   const getAllLab = async () => {
     axios.get(`${baseUrl}user/laboratory`).then((res) => {
       setLab(res.data.reverse());
@@ -71,7 +85,7 @@ const DashboardPage = () => {
   };
 
   const getAllUsingLab = async () => {
-    axios.get(`${baseUrl}user/reservation/${loged.id}`).then((res) => {
+    axios.get(`${baseUrl}user/reservation/${userId}`).then((res) => {
       setUsingLab(res.data);
     });
   };
@@ -82,6 +96,8 @@ const DashboardPage = () => {
     if (!localStorage.getItem("authenticated")) {
       navigate("/login");
     }
+    console.log(loged.id);
+    setUserId(JSON.parse(reactLocalStorage.get("user")).id);
     getAllUsingLab();
     getAllLab();
     getAllUser();
@@ -146,8 +162,18 @@ const DashboardPage = () => {
     { field: "status", headerName: "Trạng Thái", width: "100" },
     { field: "id", headerName: "Mã", width: "100" },
     { field: "admin", headerName: "Lab Admin", width: "150" },
-    { field: "startDate", headerName: "Ngày đặt", width: "200" },
-    { field: "endDate", headerName: "Kết thúc", width: "200" },
+    {
+      field: "startDate",
+      headerName: "Ngày đặt",
+      width: "200",
+      valueGetter: (params) => new Date(params.row.startDate),
+    },
+    {
+      field: "endDate",
+      headerName: "Kết thúc",
+      width: "200",
+      valueGetter: (params) => new Date(params.row.endDate),
+    },
   ];
 
   return (
@@ -169,17 +195,30 @@ const DashboardPage = () => {
       >
         {title}
       </Typography>
+      <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+        <Fab
+          color="primary"
+          aria-label="refresh"
+          size="small"
+          onClick={() => {
+            getAllLab();
+            getAllUsingLab();
+          }}
+        >
+          <Refresh />
+        </Fab>
+      </Stack>
       <DataGrid
         sx={{
           width: "1024px",
-          height: "100px",
+          height: "200px",
           marginLeft: "50px",
         }}
         disableColumnFilter
         disableColumnSelector
         disableDensitySelector
         autoPageSize
-        rows={lab}
+        rows={usingLab}
         columns={columnUsing}
         pageSize={5}
         rowsPerPageOptions={[10]}
@@ -196,7 +235,7 @@ const DashboardPage = () => {
             justifyContent: "center",
             marginLeft: "50px",
             marginTop: "20px",
-            height: "600px",
+            height: "500px",
           }}
         >
           <DataGrid
@@ -220,25 +259,15 @@ const DashboardPage = () => {
             rowsPerPageOptions={[10]}
           />
         </Paper>
-        <CreateLabModel
-          columns={columns}
-          open={createModalOpen}
-          users={user}
-          onClose={() => {
-            setCreateModalOpen(false);
-            getAllLab();
-          }}
-        />
         <EditLabModel
           columns={columns}
           labId={labId}
-          adminId={adminId}
-          labEdit={labEdit}
-          users={user}
+          userId={loged.id}
           open={editModel}
           onClose={() => {
             setEditModel(false);
             getAllLab();
+            getAllUsingLab();
           }}
         />
       </Box>
@@ -248,21 +277,26 @@ const DashboardPage = () => {
 
 export default DashboardPage;
 
-export const CreateLabModel = ({ open, columns, onClose, onSubmit, users }) => {
-  const [name, setName] = useState();
-  const [type, setType] = useState();
-  const [status, setStatus] = useState("AVAILABLE");
-  const [user, setUser] = useState();
+export const EditLabModel = ({ open, onClose, userId, labId }) => {
+  const [startDate, setStateDate] = useState();
+  const [endDate, setEndDate] = useState();
 
+  const [st, setSt] = useState(dayjs(new Date()));
+  const [en, setEn] = useState(dayjs(new Date()));
+
+  const handleDate = (date) => {
+    console.log(Math.floor(new Date(date).getTime() / 1000));
+    return Math.floor(new Date(date).getTime() / 1000);
+  };
   const handleSubmit = () => {
     axios
       .post(
-        `${baseUrl}user/laboratory/create`,
+        `${baseUrl}user/reservation/create`,
         {
-          name: name,
-          type: type,
-          status: status,
-          user: user,
+          userId: userId,
+          labId: labId,
+          startDate: startDate,
+          endDate: endDate,
         },
         {
           headers: {
@@ -272,219 +306,48 @@ export const CreateLabModel = ({ open, columns, onClose, onSubmit, users }) => {
         }
       )
       .then((res) => {
+        console.log(res.data);
         onClose();
       });
   };
-  const labAdmin = users.filter(
-    (user) => user.role.name === "LAB ADMIN" && user.status === "ACTIVE"
-  );
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Thêm Mới</DialogTitle>
+      <DialogTitle textAlign="center"> Đặt Phòng Thực Hành</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: "100%",
-              minWidth: { xs: "300px", sm: "360px", md: "400px" },
-              gap: "1.5rem",
-            }}
-          >
-            <TextField
-              label={"Tên Phòng"}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <TextField
-              label={"Loại Phòng"}
-              onChange={(e) => setType(e.target.value)}
-            />
-            {/* <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="controlled-native">
-                Trạng Thái
-              </InputLabel>
-              <NativeSelect
-                defaultValue={status}
-                onChange={(e) => setStatus(e.target.value)}
-                inputProps={{
-                  name: "status",
-                  id: "controlled-native",
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Stack
+              sx={{
+                marginTop: "20px",
+              }}
+              spacing={5}
+            >
+              <DateTimePicker
+                label="Chọn Thời Gian Bắt Đầu"
+                value={st}
+                onChange={(e) => {
+                  setSt(e);
+                  setStateDate(handleDate(e));
                 }}
-              >
-                <option value={"AVAILABLE"}>AVAILABLE</option>
-                <option value={"IN USE"}>IN USE</option>
-              </NativeSelect>
-            </FormControl> */}
-
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                Lab Admin
-              </InputLabel>
-              <NativeSelect
-                defaultValue={"select"}
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                inputProps={{
-                  name: "user",
-                  id: "uncontrolled-native",
+                renderInput={(params) => <TextField {...params} />}
+              />
+              <DateTimePicker
+                label="Chọn Thời Gian Kết Thúc"
+                value={en}
+                onChange={(e) => {
+                  setEn(e);
+                  setEndDate(handleDate(e));
                 }}
-              >
-                <option disabled value="select">
-                  Select a lab admin
-                </option>
-                {labAdmin?.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.firstName} {user.lastName}
-                  </option>
-                ))}
-              </NativeSelect>
-            </FormControl>
-          </Stack>
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </Stack>
+          </LocalizationProvider>
         </form>
       </DialogContent>
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Huỷ</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Thêm Mới
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-export const EditLabModel = ({
-  open,
-  columns,
-  onClose,
-  onSubmit,
-  labId,
-  labEdit,
-  users,
-  adminId,
-}) => {
-  //   const cols = [
-  //     { field: "name", headerName: "Tên", width: 70 },
-  //     { field: "type", headerName: "Loại", width: 100 },
-  //     { field: "status", headerName: "Trạng Thái", width: 200 },
-  //     { field: "user", headerName: "Admin", width: 130 },
-  //   ];
-  //   const [values, setValues] = useState(() =>
-  //     cols.reduce((acc, column) => {
-  //       const key = column.field;
-  //       acc[column.field ?? ""] = labEdit[key];
-  //       return acc;
-  //     }, {})
-  //   );
-
-  const [name, setName] = useState();
-  const [type, setType] = useState();
-  const [status, setStatus] = useState();
-  const [user, setUser] = useState();
-
-  useEffect(() => {
-    setName(labEdit.name);
-    setStatus(labEdit.status);
-    setUser(adminId);
-    setType(labEdit.type);
-  }, [labEdit]);
-
-  const handleSubmit = () => {
-    axios
-      .patch(
-        `${baseUrl}user/laboratory/edit/${labId}`,
-        {
-          name: name,
-          type: type,
-          status: status,
-          user: user,
-        },
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        onClose();
-      });
-  };
-
-  const labAdmin = users.filter(
-    (user) => user.role.name === "LAB ADMIN" && user.status === "ACTIVE"
-  );
-  //   const handleChange = (e) => {
-  //     setValues({ ...values, [e.target.name]: e.target.value });
-  //     console.log(values);
-  //   };
-  return (
-    <Dialog open={open}>
-      <DialogTitle textAlign="center">Sửa Thông Tin</DialogTitle>
-      <DialogContent>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: "100%",
-              minWidth: { xs: "300px", sm: "360px", md: "400px" },
-              gap: "1.5rem",
-            }}
-          >
-            <TextField
-              key={"name"}
-              label={"Tên"}
-              defaultValue={labEdit.name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <TextField
-              key={"type"}
-              label={"Loại Phòng"}
-              defaultValue={labEdit.type}
-              onChange={(e) => setType(e.target.value)}
-            />
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="controlled-native">
-                Trạng Thái
-              </InputLabel>
-              <NativeSelect
-                defaultValue={status}
-                onChange={(e) => setStatus(e.target.value)}
-                inputProps={{
-                  name: "status",
-                  id: "controlled-native",
-                }}
-              >
-                <option value={"AVAILABLE"}>AVAILABLE</option>
-                <option value={"IN USE"}>IN USE</option>
-              </NativeSelect>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                Lab Admin
-              </InputLabel>
-              <NativeSelect
-                defaultValue={
-                  Object.keys(labEdit).length === 0 ? "" : labEdit.user.id
-                }
-                onChange={(e) => setUser(e.target.value)}
-                inputProps={{
-                  name: "user",
-                  id: "uncontrolled-native",
-                }}
-              >
-                {labAdmin?.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.firstName} {user.lastName}
-                  </option>
-                ))}
-              </NativeSelect>
-            </FormControl>
-          </Stack>
-        </form>
-      </DialogContent>
-      <DialogActions sx={{ p: "1.25rem" }}>
-        <Button onClick={onClose}>Huỷ</Button>
-        <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Sửa Thông Tin
+          Đặt Phòng Thực Hành
         </Button>
       </DialogActions>
     </Dialog>

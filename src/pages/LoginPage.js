@@ -20,14 +20,16 @@ import axios from "axios";
 import Button from "@mui/material/Button";
 import { UserContext } from "../App";
 import { reactLocalStorage } from "reactjs-localstorage";
+import { useConfirm } from "material-ui-confirm";
+import { useAlert } from "react-alert";
 
 function LoginPage() {
+  const alert = useAlert();
+
   const { loged, setLoged, setAuthenticate } = useContext(UserContext);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const [alert, setAlert] = useState(false);
 
   const enterUsername = (e) => {
     setUsername(e.target.value);
@@ -48,25 +50,37 @@ function LoginPage() {
     );
 
     let data = res && res.data;
-    localStorage.setItem("authenticated", true);
 
     if (data) {
-      reactLocalStorage.set("authenticate", true);
-      setAuthenticate(reactLocalStorage.get("authenticate"));
-      reactLocalStorage.set("user", JSON.stringify(data));
-      setLoged(JSON.parse(reactLocalStorage.get("user")));
-      data && setAlert(true);
-      data.role.name === "SUPER ADMIN"
-        ? setTimeout(() => {
-            navigate("/admin");
-          }, 2000)
-        : data.role.name === "LAB ADMIN"
-        ? setTimeout(() => {
-            navigate("/labAdmin");
-          }, 2000)
-        : setTimeout(() => {
-            navigate("/teacher");
-          }, 2000);
+      if (data.status === "ACTIVE") {
+        localStorage.setItem("authenticated", true);
+        reactLocalStorage.set("authenticate", true);
+        setAuthenticate(reactLocalStorage.get("authenticate"));
+        reactLocalStorage.set("user", JSON.stringify(data));
+        setLoged(JSON.parse(reactLocalStorage.get("user")));
+
+        alert.success(
+          "Đăng Nhập Thành Công, Đang Định Hướng Tới Trang Tiếp Theo...."
+        );
+
+        data.role.name === "SUPER ADMIN"
+          ? setTimeout(() => {
+              navigate("/admin");
+            }, 4000)
+          : data.role.name === "LAB ADMIN"
+          ? setTimeout(() => {
+              navigate("/labAdmin");
+            }, 4000)
+          : setTimeout(() => {
+              navigate("/teacher");
+            }, 4000);
+      } else {
+        alert.error("Tài khoản vô hiệu hoá, liên hệ admin để xử lý");
+      }
+    } else {
+      alert.error(
+        "Tên đăng nhập hoặc mật khẩu không chính xác, vui lòng nhập lại"
+      );
     }
   };
 
@@ -200,16 +214,6 @@ function LoginPage() {
                   />
                 </FormControl>
               </Box>
-
-              <p
-                style={{
-                  display: alert ? "inherit" : "none",
-                  marginLeft: "40px",
-                }}
-              >
-                Login Successfully
-              </p>
-
               <Box>
                 <Button
                   sx={{

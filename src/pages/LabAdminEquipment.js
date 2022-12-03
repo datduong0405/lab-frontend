@@ -10,6 +10,8 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import NativeSelect from "@mui/material/NativeSelect";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import Fab from "@mui/material/Fab";
 import {
   Box,
   Typography,
@@ -26,15 +28,9 @@ import {
   Tooltip,
   Toolbar,
   Select,
-  Fab,
 } from "@mui/material";
 
-import {
-  ConstructionOutlined,
-  Delete,
-  Edit,
-  Refresh,
-} from "@mui/icons-material";
+import { ConstructionOutlined, Delete, Edit } from "@mui/icons-material";
 import { UserContext } from "../App";
 import "./DashboardPage.css";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -52,36 +48,23 @@ const baseUrl = "http://localhost:8080/api/lab/";
 const EquipmentPage = () => {
   const [lab, setLab] = useState([]);
 
-  const { loged, setLoged } = useContext(UserContext);
-
-  //   const storeUser = reactLocalStorage.get("user");
-  //   const parseUser = JSON.parse(storeUser);
-  const [selected, setSelected] = useState(4);
   const [title, setTitle] = useState("Quản Lý Thiết Bị");
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+
   const [editModel, setEditModel] = useState(false);
   const [labId, setLabId] = useState();
   const [labEdit, setLabEdit] = useState({});
-  const [user, setUser] = useState([]);
-  const [adminId, setAdminId] = useState();
-  const [labE, setLabE] = useState();
+
   const [types, setTypes] = useState([]);
 
   const getAllLab = async () => {
     axios.get(`${baseUrl}user/equipment/labs`).then((res) => {
-      setLab(res.data.reverse());
+      setLab(res.data);
     });
   };
 
   const getAllType = () => {
     axios.get(`${baseUrl}user/etype`).then((res) => {
       setTypes(res.data);
-    });
-  };
-  const getAllUser = async () => {
-    const url = "http://localhost:8080/api/lab/user/";
-    axios.get(url).then((res) => {
-      setUser(res.data.reverse());
     });
   };
 
@@ -93,7 +76,6 @@ const EquipmentPage = () => {
     }
     getAllType();
     getAllLab();
-    getAllUser();
   }, []);
 
   const deleteLab = (e, row) => {
@@ -104,7 +86,7 @@ const EquipmentPage = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "Mã", width: "50" },
+    { field: "id", headerName: "Mã Thiết Bị", width: "50" },
 
     { field: "name", headerName: "Tên Thiết Bị", width: "100" },
     { field: "type", headerName: "Loại Thiết Bị", width: "100" },
@@ -157,39 +139,6 @@ const EquipmentPage = () => {
     },
   ];
 
-  const adminNav = [
-    {
-      icon: <HomeIcon />,
-      title: "Tổng Quan",
-      id: 1,
-      path: "/",
-    },
-    {
-      icon: <SupervisedUserCircleIcon />,
-      title: "Người Dùng",
-      id: 2,
-      path: "/user",
-    },
-    {
-      icon: <ElectricBoltIcon />,
-      title: "Phòng Thực Hành",
-      id: 3,
-      path: "/lab",
-    },
-    {
-      icon: <DevicesIcon />,
-      title: "Thiết Bị",
-      id: 4,
-      path: "/equipment",
-    },
-    {
-      icon: <HistoryIcon />,
-      title: "Lịch Sử",
-      id: 5,
-      path: "/history",
-    },
-  ];
-
   return (
     <Box
       className="content"
@@ -210,21 +159,13 @@ const EquipmentPage = () => {
         {title}
       </Typography>
       <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-        <Button
-          size="small"
-          variant="contained"
-          color="success"
-          onClick={() => setCreateModalOpen(true)}
-        >
-          Thêm Thiết Bị
-        </Button>
         <Fab
           color="primary"
           aria-label="refresh"
           size="small"
           onClick={getAllLab}
         >
-          <Refresh />
+          <RefreshIcon />
         </Fab>
       </Stack>
       <Box className="content-bottom">
@@ -256,15 +197,6 @@ const EquipmentPage = () => {
             rowsPerPageOptions={[10]}
           />
         </Paper>
-        <CreateEModel
-          columns={columns}
-          open={createModalOpen}
-          types={types}
-          onClose={() => {
-            setCreateModalOpen(false);
-            getAllLab();
-          }}
-        />
         <EditLabModel
           columns={columns}
           labId={labId}
@@ -282,114 +214,6 @@ const EquipmentPage = () => {
 };
 
 export default EquipmentPage;
-
-export const CreateEModel = ({ open, columns, onClose, types }) => {
-  const [name, setName] = useState();
-  const [type, setType] = useState();
-  const [status, setStatus] = useState();
-  const [state, setState] = useState();
-  const [des, setDes] = useState();
-
-  const handleSubmit = () => {
-    axios
-      .post(
-        `${baseUrl}user/equipment/create`,
-        {
-          name: name,
-          type: type,
-          status: status,
-          state: state,
-          description: des,
-        },
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        onClose();
-      });
-  };
-
-  return (
-    <Dialog open={open}>
-      <DialogTitle textAlign="center">Thêm Mới</DialogTitle>
-      <DialogContent>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: "100%",
-              minWidth: { xs: "300px", sm: "360px", md: "400px" },
-              gap: "1.5rem",
-            }}
-          >
-            <TextField
-              label={"Tên Thiết Bị"}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <TextField
-              label={"Mô Tả Thiết Bị"}
-              onChange={(e) => setDes(e.target.value)}
-            />
-            <TextField
-              label={"Tình Trạng Thiết Bị"}
-              onChange={(e) => setState(e.target.value)}
-            />
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="a">
-                Trạng Thái
-              </InputLabel>
-              <NativeSelect
-                defaultValue={"select"}
-                onChange={(e) => setStatus(e.target.value)}
-                inputProps={{
-                  name: "status",
-                  id: "a",
-                }}
-              >
-                <option disabled value={"select"}>
-                  Chọn Trạng Thái
-                </option>
-                <option value="AVAILABLE">AVAILABLE</option>
-                <option value="NOT AVAILABLE">NOT AVAILABLE</option>
-              </NativeSelect>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="b">
-                Loại Thiết Bị
-              </InputLabel>
-              <NativeSelect
-                defaultValue={"select"}
-                onChange={(e) => setType(e.target.value)}
-                inputProps={{
-                  name: "type",
-                  id: "b",
-                }}
-              >
-                <option disabled value={"select"}>
-                  Chọn Loại Thiết Bị
-                </option>
-                {types?.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </NativeSelect>
-            </FormControl>
-          </Stack>
-        </form>
-      </DialogContent>
-      <DialogActions sx={{ p: "1.25rem" }}>
-        <Button onClick={onClose}>Huỷ</Button>
-        <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Thêm Mới
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 export const EditLabModel = ({
   open,
