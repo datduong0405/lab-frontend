@@ -13,6 +13,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { DevicesOther } from "@mui/icons-material";
 
 const LabAdminLayout = () => {
   const { loged, setLoged } = useContext(UserContext);
@@ -47,9 +48,15 @@ const LabAdminLayout = () => {
       path: "/labAdmin/equipment",
     },
     {
+      icon: <DevicesOther />,
+      title: " Loại Thiết Bị",
+      id: 5,
+      path: "/labAdmin/type",
+    },
+    {
       icon: <HistoryIcon />,
       title: "Lịch Sử",
-      id: 5,
+      id: 6,
       path: "/labAdmin/history",
     },
   ];

@@ -1,63 +1,38 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NativeSelect from "@mui/material/NativeSelect";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import {
   Box,
-  Typography,
   Button,
-  Stack,
-  Paper,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Toolbar,
-  Select,
   Fab,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import NativeSelect from "@mui/material/NativeSelect";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import {
-  ConstructionOutlined,
-  Delete,
-  Edit,
-  Refresh,
-} from "@mui/icons-material";
-import { UserContext } from "../App";
-import "./DashboardPage.css";
-import { reactLocalStorage } from "reactjs-localstorage";
+import { Refresh } from "@mui/icons-material";
+import DevicesIcon from "@mui/icons-material/Devices";
+import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
+import HistoryIcon from "@mui/icons-material/History";
 import HomeIcon from "@mui/icons-material/Home";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
-import DevicesIcon from "@mui/icons-material/Devices";
-import HistoryIcon from "@mui/icons-material/History";
-import { styled } from "@mui/material/styles";
-import { PieChart } from "react-minimal-pie-chart";
 import axios from "axios";
-import MaterialReactTable from "material-react-table";
+import { useAlert } from "react-alert";
+import { UserContext } from "../App";
+import "./DashboardPage.css";
 
 const baseUrl = "http://localhost:8080/api/lab/";
 const EquipmentPage = () => {
   const [lab, setLab] = useState([]);
-
-  const { loged, setLoged } = useContext(UserContext);
-
-  //   const storeUser = reactLocalStorage.get("user");
-  //   const parseUser = JSON.parse(storeUser);
-  const [selected, setSelected] = useState(4);
-  const [title, setTitle] = useState("Quản Lý Thiết Bị");
+  const alert = useAlert();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModel, setEditModel] = useState(false);
   const [labId, setLabId] = useState();
@@ -99,6 +74,7 @@ const EquipmentPage = () => {
   const deleteLab = (e, row) => {
     const id = row.id;
     axios.delete(`${baseUrl}user/equipment/delete/${id}`).then((response) => {
+      alert.info("Xoá Thành Công");
       getAllLab();
     });
   };
@@ -207,7 +183,7 @@ const EquipmentPage = () => {
         marginBottom="20px"
         color="#603D08"
       >
-        {title}
+        Quản Lý Thiết Bị
       </Typography>
       <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
         <Button
@@ -290,6 +266,8 @@ export const CreateEModel = ({ open, columns, onClose, types }) => {
   const [state, setState] = useState();
   const [des, setDes] = useState();
 
+  const alert = useAlert();
+
   const handleSubmit = () => {
     axios
       .post(
@@ -309,6 +287,7 @@ export const CreateEModel = ({ open, columns, onClose, types }) => {
         }
       )
       .then((res) => {
+        alert.show("Thêm Thành Công");
         onClose();
       });
   };
@@ -407,6 +386,8 @@ export const EditLabModel = ({
   const [state, setState] = useState();
   const [des, setDes] = useState();
 
+  const alert = useAlert();
+
   useEffect(() => {
     setName(labEdit.name);
     setStatus(labEdit.status);
@@ -434,6 +415,7 @@ export const EditLabModel = ({
         }
       )
       .then((res) => {
+        alert.show("Sửa Thành Công");
         onClose();
       });
   };

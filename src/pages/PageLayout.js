@@ -18,7 +18,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
-import { NotificationsNone } from "@mui/icons-material";
+import { Engineering, NotificationsNone } from "@mui/icons-material";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -67,6 +67,18 @@ const PageLayout = () => {
       path: "/admin/equipment",
     },
     {
+      icon: <DevicesIcon />,
+      title: "Loại Thiết Bị",
+      id: 6,
+      path: "/admin/equipmentType",
+    },
+    {
+      icon: <Engineering />,
+      title: "Bảo Trì/Bảo Dưỡng",
+      id: 7,
+      path: "/admin/maintain",
+    },
+    {
       icon: <HistoryIcon />,
       title: "Lịch Sử",
       id: 5,
@@ -94,7 +106,14 @@ const PageLayout = () => {
             navigate("/login");
           }}
         >
-          Back to login
+          Login
+        </Button>
+        <Button
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          Back
         </Button>
       </div>
     );

@@ -45,11 +45,12 @@ import DevicesIcon from "@mui/icons-material/Devices";
 import HistoryIcon from "@mui/icons-material/History";
 import axios from "axios";
 import MaterialReactTable from "material-react-table";
+import { useAlert } from "react-alert";
 
 const baseUrl = "http://localhost:8080/api/lab/";
-const DashboardPage = () => {
-  const { loged, setLoged } = useContext(UserContext);
 
+const DashboardPage = () => {
+  const alert = useAlert();
   const [lab, setLab] = useState([]);
 
   // const storeUser = reactLocalStorage.get("user");
@@ -88,14 +89,24 @@ const DashboardPage = () => {
   const deleteLab = (e, row) => {
     const id = row.id;
     axios.delete(`${baseUrl}user/laboratory/delete/${id}`).then((response) => {
+      alert.info("Xoá Thành Công");
       getAllLab();
     });
   };
 
   const columns = [
-    { field: "name", headerName: "Tên Phòng", width: "200" },
+    { field: "id", headerName: "Mã", width: "50" },
+
+    { field: "name", headerName: "Tên Phòng", width: "150" },
     { field: "type", headerName: "Loại", width: "100" },
     { field: "status", headerName: "Trạng Thái", width: "100" },
+    {
+      field: "date",
+      type: "dateTime",
+      headerName: "Ngày tạo",
+      width: "200",
+      valueGetter: (params) => new Date(params.row.createdDate),
+    },
     {
       field: "user",
       headerName: "Lab Admin",
@@ -270,6 +281,7 @@ export const CreateLabModel = ({ open, columns, onClose, onSubmit, users }) => {
   const [type, setType] = useState();
   const [status, setStatus] = useState("AVAILABLE");
   const [user, setUser] = useState();
+  const alert = useAlert();
 
   const handleSubmit = () => {
     axios
@@ -289,6 +301,7 @@ export const CreateLabModel = ({ open, columns, onClose, onSubmit, users }) => {
         }
       )
       .then((res) => {
+        alert.success("Thêm mới thành công !!!");
         onClose();
       });
   };
@@ -396,7 +409,7 @@ export const EditLabModel = ({
   const [type, setType] = useState();
   const [status, setStatus] = useState();
   const [user, setUser] = useState();
-
+  const alert = useAlert();
   useEffect(() => {
     setName(labEdit.name);
     setStatus(labEdit.status);
@@ -422,6 +435,7 @@ export const EditLabModel = ({
         }
       )
       .then((res) => {
+        alert.show("Sửa Thành Công ");
         onClose();
       });
   };

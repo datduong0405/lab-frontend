@@ -1,19 +1,15 @@
-import React, { useEffect, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Stack } from "@mui/material";
-import { Link, Outlet } from "react-router-dom";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-import { UserContext } from "../App";
-import "./DashboardPage.css";
-import HomeIcon from "@mui/icons-material/Home";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import { Notifications, Report } from "@mui/icons-material";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
-import DevicesIcon from "@mui/icons-material/Devices";
 import HistoryIcon from "@mui/icons-material/History";
-import SettingsIcon from "@mui/icons-material/Settings";
+import HomeIcon from "@mui/icons-material/Home";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import Badge from "@mui/material/Badge";
-import { NotificationAdd, Notifications } from "@mui/icons-material";
+import { UserContext } from "../App";
+import "./DashboardPage.css";
 
 const PageLayout = () => {
   const { loged, setLoged } = useContext(UserContext);
@@ -40,6 +36,12 @@ const PageLayout = () => {
       title: "Phòng Thực Hành",
       id: 3,
       path: "/teacher/lab",
+    },
+    {
+      icon: <Report />,
+      title: "Báo Cáo Sư Cố",
+      id: 4,
+      path: "/teacher/report",
     },
     {
       icon: <HistoryIcon />,

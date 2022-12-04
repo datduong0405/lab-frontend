@@ -1,48 +1,12 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import NativeSelect from "@mui/material/NativeSelect";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import Fab from "@mui/material/Fab";
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Paper,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  MenuItem,
-  TextField,
-  Tooltip,
-  Toolbar,
-  Select,
-} from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { ConstructionOutlined, Delete, Edit } from "@mui/icons-material";
-import { UserContext } from "../App";
-import "./DashboardPage.css";
-import { reactLocalStorage } from "reactjs-localstorage";
-import HomeIcon from "@mui/icons-material/Home";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
-import DevicesIcon from "@mui/icons-material/Devices";
-import HistoryIcon from "@mui/icons-material/History";
-import { styled } from "@mui/material/styles";
-import { PieChart } from "react-minimal-pie-chart";
 import axios from "axios";
-import MaterialReactTable from "material-react-table";
+import "./DashboardPage.css";
 
 const baseUrl = "http://localhost:8080/api/lab/";
 const EquipmentPage = () => {

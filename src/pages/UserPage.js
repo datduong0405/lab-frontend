@@ -14,18 +14,22 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Skeleton from "@mui/material/Skeleton";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import CircularProgress from "@mui/material/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Refresh } from "@mui/icons-material";
 import axios from "axios";
 import "./DashboardPage.css";
+import { useAlert } from "react-alert";
 
 const baseUrl = "http://localhost:8080/api/lab/";
-const DashboardPage = () => {
-  const [user, setUser] = useState([]);
 
+const DashboardPage = () => {
+  const alert = useAlert();
+  const [user, setUser] = useState([]);
   const [title, setTitle] = useState("Quản Lý Người Dùng");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModel, setEditModel] = useState(false);
@@ -50,9 +54,17 @@ const DashboardPage = () => {
 
   const deleteUser = (e, row) => {
     const username = row.username;
-    axios.get(`${baseUrl}user/delete?key=${username}`).then((response) => {
-      getAllUser();
-    });
+    axios
+      .get(`${baseUrl}user/delete?key=${username}`)
+      .then((response) => {
+        alert.info("Xoá Thành Công");
+        getAllUser();
+      })
+      .catch((e) => {
+        alert.error(
+          "Không thể xoá người đùng này, người dùng có thể đang có nhiệm vụ quản lý hoặc đang sử dụng phòng thực hành"
+        );
+      });
   };
 
   const columns = [
@@ -94,10 +106,10 @@ const DashboardPage = () => {
               color="error"
               variant="contained"
               onClick={(e) => deleteUser(e, params.row)}
-              disabled={
-                (params.row.role && params.row.role.name === "SUPER ADMIN") ||
-                params.row.status === "ACTIVE"
-              }
+              // disabled={
+              //   (params.row.role && params.row.role.name === "SUPER ADMIN") ||
+              //   params.row.status === "ACTIVE"
+              // }
             >
               Xoá
             </Button>
@@ -106,7 +118,6 @@ const DashboardPage = () => {
       },
     },
   ];
-
   return (
     <Box
       className="content"
@@ -210,6 +221,8 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
   const [st, setS] = useState("ACTIVE");
   const [rl, setR] = useState("TEACHER");
 
+  const alert = useAlert();
+
   const handleSubmit = () => {
     console.log(rl);
     axios
@@ -234,6 +247,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
         }
       )
       .then((res) => {
+        alert.success("Thêm Thành Công");
         onClose();
       });
   };
@@ -330,6 +344,8 @@ export const EditAccountModal = ({
   const [dp, setD] = useState(userEdit.department);
   const [st, setS] = useState(userEdit.status);
 
+  const alert = useAlert();
+
   useEffect(() => {
     setF(userEdit.firstName);
     setL(userEdit.lastName);
@@ -367,6 +383,7 @@ export const EditAccountModal = ({
         }
       )
       .then((res) => {
+        alert.info("Sửa Thành Công");
         onClose();
       });
   };

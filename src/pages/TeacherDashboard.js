@@ -55,8 +55,6 @@ const TeacherDashboard = () => {
   const [hide, setHide] = useState("hidden");
   const [disable, setDisable] = useState(true);
 
-  console.log(Math.floor(new Date("2012.08.10").getTime() / 1000));
-
   const getAllLab = async () => {
     axios.get(`${baseUrl}user/laboratory`).then((res) => {
       setLab(res.data);
