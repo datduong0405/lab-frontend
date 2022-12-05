@@ -3,8 +3,8 @@ import {
   Route,
   Routes,
   BrowserRouter as Router,
-  useNavigate,
-  Link,
+  redirect,
+  Navigate,
 } from "react-router-dom";
 
 import {
@@ -20,6 +20,8 @@ import {
   LabAdminLab,
   LabAdminEquipment,
   HistoryPage,
+  TypePage,
+  Maintain,
 } from "./pages";
 import axios from "axios";
 import PageLayout from "./pages/PageLayout";
@@ -55,7 +57,8 @@ const App = () => {
     >
       <AlertProvider template={AlertTemplate} {...options}>
         <Routes>
-          <Route exact path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Navigate to="/login" replace />}></Route>
+          <Route path="/login" element={<LoginPage />}></Route>
 
           <Route path="/admin" element={<PageLayout />}>
             <Route index element={<DashboardPage />} />
@@ -63,18 +66,23 @@ const App = () => {
             <Route path="/admin/lab" element={<LabPage />} />
             <Route path="/admin/equipment" element={<EquipmentPage />} />
             <Route path="/admin/history" element={<HistoryPage />} />
+            <Route path="/admin/type" element={<TypePage />} />
+            <Route path="/admin/maintain" element={<Maintain />} />
           </Route>
 
           <Route path="teacher" element={<TeacherLayout />}>
             <Route index element={<TeacherDashboard />} />
             <Route path="/teacher/lab" element={<TeacherLab />} />
             <Route path="/teacher/history" element={<HistoryPage />} />
+            <Route path="/teacher/report" element={<Maintain />} />
           </Route>
           <Route path="labAdmin" element={<LabAdminLayout />}>
             <Route index element={<LabAdminDashboard />} />
             <Route path="/labAdmin/lab" element={<LabAdminLab />} />
             <Route path="/labAdmin/equipment" element={<LabAdminEquipment />} />
             <Route path="/labAdmin/history" element={<HistoryPage />} />
+            <Route path="/labAdmin/type" element={<TypePage />} />
+            <Route path="/labAdmin/report" element={<Maintain />} />
           </Route>
           <Route path="*" element={<NotFound />}></Route>
         </Routes>

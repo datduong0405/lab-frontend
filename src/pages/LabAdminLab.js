@@ -33,10 +33,12 @@ import "./DashboardPage.css";
 import axios from "axios";
 
 import { useConfirm } from "material-ui-confirm";
+import { useAlert } from "react-alert";
 
 const baseUrl = "http://localhost:8080/api/lab/";
 const DashboardPage = () => {
   const confirm = useConfirm();
+  const alert = useAlert();
   const { loged, setLoged } = useContext(UserContext);
 
   const [lab, setLab] = useState([]);
@@ -58,7 +60,6 @@ const DashboardPage = () => {
   const [AvaiEquip, setAvaiEquip] = useState([]);
   const getAllUsingEquip = (id) => {
     axios.get(`${baseUrl}user/equipment/using/${id}`).then((res) => {
-      console.log(res.data);
       setUsingEquip(res.data);
     });
   };
@@ -92,22 +93,8 @@ const DashboardPage = () => {
     getAllUser();
   }, []);
 
-  const deleteLab = (e, row) => {
-    const id = row.id;
-    confirm({ description: `Bạn có muốn xoá  "${row.name}" không` }).then(
-      () => {
-        axios
-          .delete(`${baseUrl}user/laboratory/delete/${id}`)
-          .then((response) => {
-            getAllLab();
-          });
-      }
-    );
-  };
-
-  const handleDelete = (item) => {};
-
   const columns = [
+    { field: "id", headerName: "Mã Phòng", width: "100" },
     { field: "name", headerName: "Tên Phòng", width: "200" },
     { field: "type", headerName: "Loại", width: "100" },
     { field: "status", headerName: "Trạng Thái", width: "100" },
@@ -137,15 +124,6 @@ const DashboardPage = () => {
               }}
             >
               Sửa
-            </Button>
-
-            <Button
-              color="error"
-              variant="contained"
-              onClick={(e) => deleteLab(e, params.row)}
-              disabled={params.row.status === "IN USE"}
-            >
-              Xoá
             </Button>
             <Button
               color="info"
@@ -291,6 +269,8 @@ export const EditLabModel = ({
   const [status, setStatus] = useState();
   const [user, setUser] = useState();
 
+  const alert = useAlert();
+
   useEffect(() => {
     setName(labEdit.name);
     setStatus(labEdit.status);
@@ -316,17 +296,11 @@ export const EditLabModel = ({
         }
       )
       .then((res) => {
+        alert.success("Sửa Thành Công");
         onClose();
       });
   };
 
-  const labAdmin = users.filter(
-    (user) => user.role.name === "LAB ADMIN" && user.status === "ACTIVE"
-  );
-  //   const handleChange = (e) => {
-  //     setValues({ ...values, [e.target.name]: e.target.value });
-  //     console.log(values);
-  //   };
   return (
     <Dialog open={open}>
       <DialogTitle textAlign="center">Sửa Thông Tin</DialogTitle>
@@ -440,6 +414,8 @@ export const EditEquipModel = ({
     setEquipId(left?.map((item) => item.id));
   };
 
+  const alert = useAlert();
+
   const customList = (title, items) => (
     <Card>
       <CardHeader
@@ -504,8 +480,6 @@ export const EditEquipModel = ({
     </Card>
   );
 
-  useEffect(() => {}, [labId]);
-
   const handleSubmit = () => {
     const id = left?.map((item) => item.id);
     axios
@@ -522,7 +496,7 @@ export const EditEquipModel = ({
         }
       )
       .then((res) => {
-        console.log("success");
+        alert.success("Lưu Thành Công");
         onClose();
       });
   };
@@ -541,7 +515,7 @@ export const EditEquipModel = ({
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Sửa Thông Tin</DialogTitle>
+      <DialogTitle textAlign="center">Quản Lý Thiết Bị</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} justifyContent="center" alignItems="center">
           <Grid item>{customList("Đang Sử Dụng", left)}</Grid>
@@ -575,7 +549,7 @@ export const EditEquipModel = ({
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Huỷ</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Sửa Thông Tin
+          Lưu
         </Button>
       </DialogActions>
     </Dialog>

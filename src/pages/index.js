@@ -10,3 +10,5 @@ export { default as LabAdminDashboard } from "./LabAdminDashboard";
 export { default as LabAdminLab } from "./LabAdminLab";
 export { default as LabAdminEquipment } from "./LabAdminEquipment";
 export { default as HistoryPage } from "./HistoryPage";
+export { default as TypePage } from "./TypePage";
+export { default as Maintain } from "./Maintain";

@@ -125,14 +125,14 @@ const EquipmentPage = () => {
               Sửa
             </Button>
 
-            <Button
+            {/* <Button
               color="error"
               variant="contained"
               onClick={(e) => deleteLab(e, params.row)}
               disabled={params.row.status === "OUT STOCk" || params.row.labName}
             >
               Xoá
-            </Button>
+            </Button> */}
           </Stack>
         );
       },
@@ -264,7 +264,7 @@ export const EditLabModel = ({
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Sửa Thông Tin</DialogTitle>
+      <DialogTitle textAlign="center">Sửa Tình Trạng Thiết Bị</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -339,7 +339,7 @@ export const EditLabModel = ({
       <DialogActions sx={{ p: "1.25rem" }}>
         <Button onClick={onClose}>Huỷ</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Sửa Thông Tin
+          Lưu
         </Button>
       </DialogActions>
     </Dialog>

@@ -70,7 +70,7 @@ const PageLayout = () => {
       icon: <DevicesIcon />,
       title: "Loại Thiết Bị",
       id: 6,
-      path: "/admin/equipmentType",
+      path: "/admin/type",
     },
     {
       icon: <Engineering />,
